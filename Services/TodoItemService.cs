@@ -1,0 +1,30 @@
+using TodoApi.Models;
+using TodoApi.Repository;
+using TodoApi.Services;
+
+namespace TodoApi.Services;
+
+public class TodoItemService : ITodoItemService
+{
+    private readonly ITodoItemRepository _repository;
+
+    public TodoItemService(ITodoItemRepository repository)
+    {
+        _repository = repository;
+    }
+
+    public async Task<TodoItem?> GetTodoItemAsync(int id)
+    {
+        return await _repository.GetTodoItemByIdAsync(id);
+    }
+
+    public async Task<IEnumerable<TodoItem>> GetAllTodoItems()
+    {
+        return await _repository.GetAllTodoItemsAsync();
+    }
+
+    public async Task<TodoItem> CreateTodoAsync(TodoItem todo)
+    {
+        return await _repository.AddTodoAsync(todo);
+    }
+}
