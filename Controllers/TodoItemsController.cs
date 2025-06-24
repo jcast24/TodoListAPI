@@ -49,6 +49,18 @@ namespace TodoApi.Controllers
             return CreatedAtAction(nameof(GetTodoItem), new { id = created.Id }, created);
         }
 
+        [HttpPut]
+        public async Task<IActionResult> UpdateTodoItem(int id, TodoItem todo)
+        {
+            if (id != todo.Id)
+            {
+                return BadRequest("Id mismatch!");
+            }
+
+            var updated = await _todoService.UpdateTodoAsync(todo);
+            return updated ? NoContent() : NotFound();
+        }
+
 
         // private bool TodoItemExists(long id)
         // {
