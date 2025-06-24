@@ -8,4 +8,6 @@ public interface ITodoItemRepository
     Task<IEnumerable<TodoItem>> GetAllTodoItemsAsync();
 
     Task<TodoItem> AddTodoAsync(TodoItem todo);
+
+    Task<bool> UpdateTodoAsync(TodoItem todo);
 }
