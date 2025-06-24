@@ -27,4 +27,9 @@ public class TodoItemService : ITodoItemService
     {
         return await _repository.AddTodoAsync(todo);
     }
+
+    public async Task<bool> UpdateTodoAsync(TodoItem todo)
+    {
+        return await _repository.UpdateTodoAsync(todo);
+    }
 }
