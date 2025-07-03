@@ -4,6 +4,7 @@ using TodoApi.Services;
 using TodoApi.Models;
 using System.Runtime.CompilerServices;
 using NuGet.Protocol.Core.Types;
+using Microsoft.Extensions.FileProviders;
 
 namespace TodoApi.Controllers
 {
@@ -59,6 +60,13 @@ namespace TodoApi.Controllers
 
             var updated = await _todoService.UpdateTodoAsync(todo);
             return updated ? NoContent() : NotFound();
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteTodoItem(int id)
+        {
+            var deleted = await _todoService.DeleteTodoAsync(id);
+            return deleted ? NoContent() : NotFound();
         }
 
 
