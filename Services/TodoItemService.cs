@@ -32,4 +32,9 @@ public class TodoItemService : ITodoItemService
     {
         return await _repository.UpdateTodoAsync(todo);
     }
+
+    public async Task<bool> DeleteTodoAsync(int id)
+    {
+        return await _repository.DeleteTodoAsync(id);
+    }
 }
