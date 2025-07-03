@@ -44,4 +44,18 @@ public class TodoItemRepository : ITodoItemRepository
         await _context.SaveChangesAsync();
         return true;
     }
+
+    public async Task<bool> DeleteTodoAsync(int id)
+    {
+        var todoItem = await _context.TodoItems.FindAsync(id);
+
+        if (todoItem == null)
+        {
+            return false;
+        }
+
+        _context.TodoItems.Remove(todoItem);
+        await _context.SaveChangesAsync();
+        return true;
+    }
 }
