@@ -10,4 +10,6 @@ public interface ITodoItemService
     Task<TodoItem> CreateTodoAsync(TodoItem todo);
 
     Task<bool> UpdateTodoAsync(TodoItem todo);
+
+    Task<bool> DeleteTodoAsync(int id);
 }
