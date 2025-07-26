@@ -1,22 +1,17 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using TodoApi.Services;
 using TodoApi.Models;
-using System.Runtime.CompilerServices;
-using NuGet.Protocol.Core.Types;
-using Microsoft.Extensions.FileProviders;
+using TodoApi.Services;
 
 namespace TodoApi.Controllers
 {
     /*
-        Class is marked with [ApiController] attribute that indicates that the controller responds to the web API requests. 
+        Class is marked with [ApiController] attribute that indicates that the controller responds to the web API requests.
         Uses DI to inject the database context into the controller. The DB context is used in each of the CRUD methods in the controller.
     */
     [Route("api/[controller]")]
     [ApiController]
     public class TodoItemsController : ControllerBase
     {
-
         private readonly ITodoItemService _todoService;
 
         public TodoItemsController(ITodoItemService todoService)
@@ -69,20 +64,19 @@ namespace TodoApi.Controllers
             return deleted ? NoContent() : NotFound();
         }
 
-
         // private bool TodoItemExists(long id)
         // {
         //     return _context.TodoItems.Any(e => e.Id == id);
         // }
 
-        // Basically converts the TodoItem model class to the DTO without needing to pass 
-        // in the "Secret" field from the original class. 
+        // Basically converts the TodoItem model class to the DTO without needing to pass
+        // in the "Secret" field from the original class.
         private static TodoItemDTO ItemToDTO(TodoItem todoItem) =>
             new TodoItemDTO
             {
                 Id = todoItem.Id,
                 Name = todoItem.Name,
-                IsComplete = todoItem.IsComplete
+                IsComplete = todoItem.IsComplete,
             };
     }
 }
