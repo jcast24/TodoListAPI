@@ -1,21 +1,15 @@
 @TodoApi_HostAddress = http://localhost:5151
 
-GET {{TodoApi_HostAddress}}/api/TodoItems/2
+GET {{TodoApi_HostAddress}}/api/TodoItems HTTP/1.1
 Accept: application/json
 
-###
-
-GET {{TodoApi_HostAddress}}/api/TodoItems
-Accept: application/json 
 
 ### 
 
-POST {{TodoApi_HostAddress}}/api/TodoItems
+POST {{TodoApi_HostAddress}}/api/TodoItems HTTP/1.1
 Content-Type: application/json
 
 {
-    "name":"Order more chicken",
-    "isComplete": true
+  "isComplete": true,
+  "name": "Buy more tissues"
 }
-
-###
