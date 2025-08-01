@@ -63,20 +63,5 @@ namespace TodoApi.Controllers
             var deleted = await _todoService.DeleteTodoAsync(id);
             return deleted ? NoContent() : NotFound();
         }
-
-        // private bool TodoItemExists(long id)
-        // {
-        //     return _context.TodoItems.Any(e => e.Id == id);
-        // }
-
-        // Basically converts the TodoItem model class to the DTO without needing to pass
-        // in the "Secret" field from the original class.
-        private static TodoItemDTO ItemToDTO(TodoItem todoItem) =>
-            new TodoItemDTO
-            {
-                Id = todoItem.Id,
-                Name = todoItem.Name,
-                IsComplete = todoItem.IsComplete,
-            };
     }
 }
