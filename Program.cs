@@ -20,7 +20,8 @@ builder.Services.AddEndpointsApiExplorer();
 */
 builder.Services.AddDbContext<TodoContext>(opt =>
 {
-    opt.UseInMemoryDatabase("TodoList");
+    // opt.UseInMemoryDatabase("TodoList");
+    opt.UseSqlite("Data source=todos.db");
 });
 
 // DI
