@@ -37,8 +37,8 @@ public class TodoItemRepository : ITodoItemRepository
             return false;
         }
 
-        todoItem.Name = todo.Name;
-        todoItem.IsComplete = todo.IsComplete;
+        todoItem.Title = todo.Title;
+        todoItem.IsCompleted = todo.IsCompleted;
 
         await _context.SaveChangesAsync();
         return true;
