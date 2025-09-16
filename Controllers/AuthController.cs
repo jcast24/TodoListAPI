@@ -57,14 +57,15 @@ public class AuthController(IConfiguration configuration, TodoContext context) :
         }
 
         string token = CreateToken(user);
-        return Ok(token);
+        return Ok(new { token });
     }
 
     private string CreateToken(User user)
     {
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Name, user.Username)
+            new Claim(ClaimTypes.Name, user.Username),
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetValue<string>("AppSettings:Token")!));
