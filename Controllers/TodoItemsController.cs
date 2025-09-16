@@ -1,4 +1,7 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using TodoApi.Models;
 using TodoApi.Services;
 
@@ -8,15 +11,41 @@ namespace TodoApi.Controllers
         Class is marked with [ApiController] attribute that indicates that the controller responds to the web API requests.
         Uses DI to inject the database context into the controller. The DB context is used in each of the CRUD methods in the controller.
     */
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class TodoItemsController : ControllerBase
     {
         private readonly ITodoItemService _todoService;
+        private readonly TodoContext _todoContext;
 
-        public TodoItemsController(ITodoItemService todoService)
+        public TodoItemsController(ITodoItemService todoService, TodoContext todoContext)
         {
             _todoService = todoService;
+            _todoContext = todoContext;
+        }
+
+        [HttpGet("mytodos")]
+        public async Task<IActionResult> GetUserTodos()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+            {
+                return Unauthorized();
+            }
+
+            int? user = int.Parse(userIdClaim.Value);
+            if (user == null)
+            {
+                return NotFound("user not found");
+            }
+
+            var todos = await _todoContext.TodoItems
+            .Where(t => t.UserId == user)
+            .ToListAsync();
+
+            return Ok(todos);
+
         }
 
         [HttpGet]
