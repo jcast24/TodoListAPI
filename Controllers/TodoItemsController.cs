@@ -48,6 +48,31 @@ namespace TodoApi.Controllers
 
         }
 
+        [HttpPost("add")]
+        public async Task<IActionResult> CreateUserTodo([FromBody] TodoItem todoItem)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+            {
+                return Unauthorized();
+            }
+
+            int userId = int.Parse(userIdClaim.Value);
+
+            var todo = new TodoItem
+            {
+                Title = todoItem.Title,
+                Description = todoItem.Description,
+                IsCompleted = false,
+                UserId = userId
+            };
+
+            _todoContext.TodoItems.Add(todo);
+            await _todoContext.SaveChangesAsync();
+
+            return Ok(todo);
+        }
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TodoItem>>> GetTodoItems()
         {
