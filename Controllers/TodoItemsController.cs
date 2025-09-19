@@ -45,7 +45,6 @@ namespace TodoApi.Controllers
             .ToListAsync();
 
             return Ok(todos);
-
         }
 
         [HttpPost("add")]
@@ -71,6 +70,106 @@ namespace TodoApi.Controllers
             await _todoContext.SaveChangesAsync();
 
             return Ok(todo);
+        }
+
+        // update entire todo
+        [HttpPut("update/{id}")]
+        public async Task<IActionResult> UpdateFullTask(int id, [FromBody] TodoItem todoItem)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+            {
+                return Unauthorized();
+            }
+
+            int userId = int.Parse(userIdClaim.Value);
+
+            var todo = await _todoContext.TodoItems.FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
+
+            if (todo == null)
+            {
+                return NotFound("Todo not found.");
+            }
+
+            todo.Title = todoItem.Title;
+            todo.Description = todoItem.Description;
+            todo.IsCompleted = todoItem.IsCompleted;
+
+            await _todoContext.SaveChangesAsync();
+            return Ok(todo);
+        }
+
+        // update isCompleted 
+        [HttpPut("completed/{id}")]
+        public async Task<IActionResult> UpdateCompletedTask(int id, [FromBody] TodoItem todoItem)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+            {
+                return Unauthorized();
+            }
+
+            int userId = int.Parse(userIdClaim.Value);
+
+            var todo = await _todoContext.TodoItems.FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
+
+            if (todo == null)
+            {
+                return NotFound("Todo not found.");
+            }
+
+            todo.IsCompleted = todoItem.IsCompleted;
+
+            await _todoContext.SaveChangesAsync();
+            return Ok(todo);
+        }
+
+
+        [HttpDelete("delete/{id}")]
+        public async Task<IActionResult> DeleteTask(int id)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+            {
+                return Unauthorized();
+            }
+
+            int userId = int.Parse(userIdClaim.Value);
+
+            var todo = await _todoContext.TodoItems.FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
+
+            if (todo == null)
+            {
+                return NotFound("Todo not found.");
+            }
+
+            _todoContext.Remove(todo);
+            await _todoContext.SaveChangesAsync();
+            return Ok("Todo deleted.");
+        }
+
+        // admin should have this role
+        [HttpDelete("user/delete/{id}")]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+            {
+                return Unauthorized();
+            }
+
+            int userId = int.Parse(userIdClaim.Value);
+
+            var user = await _todoContext.Users.FirstOrDefaultAsync(u => u.Id == id);
+
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            _todoContext.Remove(user);
+            await _todoContext.SaveChangesAsync();
+            return Ok("User successfully deleted.");
         }
 
         [HttpGet]
