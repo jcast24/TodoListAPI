@@ -38,15 +38,15 @@ public class AuthController(IConfiguration configuration, TodoContext context) :
     {
         var user = await context.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
 
-        if (user is null)
+        if (user is null || user.Username != request.Username)
         {
             return BadRequest("User not found");
         }
 
-        if (user.Username != request.Username)
-        {
-            return BadRequest("User not found");
-        }
+        // if (user.Username != request.Username)
+        // {
+        //     return BadRequest("User not found");
+        // }
 
         if (new PasswordHasher<User>().VerifyHashedPassword(user, user.PasswordHash, request.Password) == PasswordVerificationResult.Failed)
         {
@@ -54,13 +54,26 @@ public class AuthController(IConfiguration configuration, TodoContext context) :
         }
 
         // string token = CreateToken(user);
-        var response = new TokenResponseDto
-        {
-            AccessToken = CreateToken(user),
-            RefreshToken = await GenerateAndSaveRefreshToken(user)
-        };
+        //var response = new TokenResponseDto
+        //{
+        //    AccessToken = CreateToken(user),
+        //    RefreshToken = await GenerateAndSaveRefreshToken(user)
+        //};
+        var response = await CreateTokenResponse(user);
 
         return Ok(response);
+    }
+
+    [HttpPost("refresh-token")]
+    public async Task<ActionResult<TokenResponseDto>> RefreshToken(RefreshTokenRequestDto request)
+    {
+        var result = await RefreshTokensAsync(request);
+        if (result is null || result.AccessToken is null || result.RefreshToken is null)
+        {
+            return Unauthorized("Invalid refresh token");
+        }
+
+        return Ok(result);
     }
 
     private string CreateToken(User user)
@@ -83,6 +96,34 @@ public class AuthController(IConfiguration configuration, TodoContext context) :
             signingCredentials: creds
         );
         return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
+    }
+
+    private async Task<TokenResponseDto> CreateTokenResponse(User? user)
+    {
+        return new TokenResponseDto
+        {
+            AccessToken = CreateToken(user),
+            RefreshToken = await GenerateAndSaveRefreshToken(user)
+        };
+    }
+
+    public async Task<TokenResponseDto?> RefreshTokensAsync(RefreshTokenRequestDto request)
+    {
+        var user = await ValidateRefreshTokenAsync(request.UserId, request.RefreshToken);
+
+        if (user is null)
+            return null;
+
+        return await CreateTokenResponse(user);
+
+    }
+    
+    private async Task<User?> ValidateRefreshTokenAsync(int userId, string refreshToken)
+    {
+        var user = await context.Users.FindAsync(userId);
+        if (user is null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow) return null;
+
+        return user;
     }
 
     // generate refresh token 
