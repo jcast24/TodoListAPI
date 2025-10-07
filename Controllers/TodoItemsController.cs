@@ -171,50 +171,5 @@ namespace TodoApi.Controllers
             await _todoContext.SaveChangesAsync();
             return Ok("User successfully deleted.");
         }
-
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<TodoItem>>> GetTodoItems()
-        {
-            var todo = await _todoService.GetAllTodoItems();
-            return Ok(todo);
-        }
-
-        [HttpGet("{id}")]
-        public async Task<ActionResult> GetTodoItem(int id)
-        {
-            var todo = await _todoService.GetTodoItemAsync(id);
-
-            if (todo == null)
-            {
-                return NotFound();
-            }
-            return Ok(todo);
-        }
-
-        [HttpPost]
-        public async Task<ActionResult<TodoItem>> PostTodoItem(TodoItem todo)
-        {
-            var created = await _todoService.CreateTodoAsync(todo);
-            return CreatedAtAction(nameof(GetTodoItem), new { id = created.Id }, created);
-        }
-
-        [HttpPut]
-        public async Task<IActionResult> UpdateTodoItem(int id, TodoItem todo)
-        {
-            if (id != todo.Id)
-            {
-                return BadRequest("Id mismatch!");
-            }
-
-            var updated = await _todoService.UpdateTodoAsync(todo);
-            return updated ? NoContent() : NotFound();
-        }
-
-        [HttpDelete]
-        public async Task<IActionResult> DeleteTodoItem(int id)
-        {
-            var deleted = await _todoService.DeleteTodoAsync(id);
-            return deleted ? NoContent() : NotFound();
-        }
     }
 }
