@@ -1,7 +1,7 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using TodoApi.Models;
 using TodoApi.Services;
 
@@ -58,18 +58,9 @@ namespace TodoApi.Controllers
 
             int userId = int.Parse(userIdClaim.Value);
 
-            var todo = new TodoItem
-            {
-                Title = todoItem.Title,
-                Description = todoItem.Description,
-                IsCompleted = false,
-                UserId = userId
-            };
+            var createdTodo = await _todoService.CreateTodoAsync(userId, todoItem);
 
-            _todoContext.TodoItems.Add(todo);
-            await _todoContext.SaveChangesAsync();
-
-            return Ok(todo);
+            return Ok(createdTodo);
         }
 
         // update entire todo
