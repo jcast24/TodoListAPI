@@ -1,39 +1,72 @@
+using Microsoft.EntityFrameworkCore;
 using TodoApi.Models;
-using TodoApi.Repository;
 
 namespace TodoApi.Services;
 
 public class TodoItemService : ITodoItemService
 {
-    private readonly ITodoItemRepository _repository;
+    private readonly TodoContext _context;
 
-    public TodoItemService(ITodoItemRepository repository)
+    public TodoItemService(TodoContext context)
     {
-        _repository = repository;
+        _context = context;
     }
 
     public async Task<TodoItem?> GetTodoItemAsync(int id)
     {
-        return await _repository.GetTodoItemByIdAsync(id);
+        throw new NotImplementedException();
     }
 
-    public async Task<IEnumerable<TodoItem>> GetAllTodoItems()
+    public async Task<IEnumerable<TodoItem>> GetAllUserTodoItemsAsync(int userId)
     {
-        return await _repository.GetAllTodoItemsAsync();
+        var todos = await _context.TodoItems.Where(t => t.UserId == userId).ToListAsync();
+        return todos;
     }
 
-    public async Task<TodoItem> CreateTodoAsync(TodoItem todo)
+    public async Task<TodoItem> CreateTodoAsync(int userId, TodoItem todo)
     {
-        return await _repository.AddTodoAsync(todo);
+        var newTodo = new TodoItem
+        {
+            Title = todo.Title,
+            Description = todo.Description,
+            IsCompleted = false,
+            UserId = userId
+        };
+
+        _context.TodoItems.Add(newTodo);
+        await _context.SaveChangesAsync();
+
+        return newTodo;
     }
 
-    public async Task<bool> UpdateTodoAsync(TodoItem todo)
+    public async Task<TodoItem?> UpdateTodoAsync(int todoId, int userId, TodoItem todo)
     {
-        return await _repository.UpdateTodoAsync(todo);
+        var getTodo = await _context.TodoItems.FirstOrDefaultAsync(t => t.Id == todoId && t.UserId == userId);
+
+        if (getTodo == null)
+        {
+            return null;
+        }
+
+        getTodo.Title = todo.Title;
+        getTodo.Description = todo.Description;
+        getTodo.IsCompleted = todo.IsCompleted;
+
+        await _context.SaveChangesAsync();
+        return getTodo;
     }
 
-    public async Task<bool> DeleteTodoAsync(int id)
+    public async Task<bool> DeleteTodoAsync(int userId, int todoId)
     {
-        return await _repository.DeleteTodoAsync(id);
+        var chosenTodo = await _context.TodoItems.FirstOrDefaultAsync(t => t.Id == todoId && t.UserId == userId);
+
+        if (chosenTodo == null)
+        {
+            return false;
+        }
+
+        _context.Remove(chosenTodo);
+        await _context.SaveChangesAsync();
+        return true;
     }
 }
