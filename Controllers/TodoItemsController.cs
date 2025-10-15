@@ -34,15 +34,13 @@ namespace TodoApi.Controllers
                 return Unauthorized();
             }
 
-            int? user = int.Parse(userIdClaim.Value);
-            if (user == null)
-            {
-                return NotFound("user not found");
-            }
+            int user = int.Parse(userIdClaim.Value);
+            var todos = await _todoService.GetAllUserTodoItemsAsync(user);
 
-            var todos = await _todoContext.TodoItems
-            .Where(t => t.UserId == user)
-            .ToListAsync();
+            if (todos == null || todos.Count() == 0)
+            {
+                return NotFound("No todos for this user.");
+            }
 
             return Ok(todos);
         }
@@ -75,19 +73,14 @@ namespace TodoApi.Controllers
 
             int userId = int.Parse(userIdClaim.Value);
 
-            var todo = await _todoContext.TodoItems.FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
+            var updatedTodo = await _todoService.UpdateTodoAsync(userId, todoItem.Id, todoItem);
 
-            if (todo == null)
+            if (updatedTodo == null)
             {
                 return NotFound("Todo not found.");
             }
 
-            todo.Title = todoItem.Title;
-            todo.Description = todoItem.Description;
-            todo.IsCompleted = todoItem.IsCompleted;
-
-            await _todoContext.SaveChangesAsync();
-            return Ok(todo);
+            return Ok(updatedTodo);
         }
 
         // update isCompleted 
@@ -127,15 +120,13 @@ namespace TodoApi.Controllers
 
             int userId = int.Parse(userIdClaim.Value);
 
-            var todo = await _todoContext.TodoItems.FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
+            var deleted = await _todoService.DeleteTodoAsync(userId, id);
 
-            if (todo == null)
+            if (!deleted)
             {
-                return NotFound("Todo not found.");
+                return NotFound("Todo not found");
             }
 
-            _todoContext.Remove(todo);
-            await _todoContext.SaveChangesAsync();
             return Ok("Todo deleted.");
         }
 
