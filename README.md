@@ -13,7 +13,7 @@ The purpose of this project is just for educational purposes and not to be imple
 - Error handling
 - Security
 
-## stuff to do:
+## Housekeeping:
 - [x] Rewrite the controller to implement the services
 - [x] Delete Repository files
 - [ ] Implement pagination, filtering, and sorting
