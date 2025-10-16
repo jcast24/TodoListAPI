@@ -13,6 +13,7 @@ public class AuthController(IAuthService authService) : ControllerBase
     public async Task<ActionResult<User>> Register(UserDto request)
     {
         var user = await authService.RegisterAsync(request);
+
         if (user is null)
         {
             return BadRequest("Username already exists");
@@ -25,6 +26,7 @@ public class AuthController(IAuthService authService) : ControllerBase
     public async Task<ActionResult<TokenResponseDto>> Login(UserDto request)
     {
         var response = await authService.LoginAsync(request);
+
         if (response is null)
         {
             return BadRequest("Invalid username or password");
