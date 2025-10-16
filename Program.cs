@@ -1,9 +1,8 @@
-using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using TodoApi.Models;
-using TodoApi.Repository;
 using TodoApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,7 +15,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 
 /*
-    Services such as DB context must be registered with the dependency injection (DI) container. The container 
+    Services such as DB context must be registered with the dependency injection (DI) container. The container
     provides services to controller.
 
     Specifies that the database context will use an in-memory database.
@@ -42,8 +41,9 @@ builder.Services.AddAuthentication(options => { options.DefaultAuthenticateSchem
 });
 
 // DI
-builder.Services.AddScoped<ITodoItemRepository, TodoItemRepository>();
+//builder.Services.AddScoped<ITodoItemRepository, TodoItemRepository>();
 builder.Services.AddScoped<ITodoItemService, TodoItemService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 var app = builder.Build();
 
