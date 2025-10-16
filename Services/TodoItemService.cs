@@ -12,11 +12,6 @@ public class TodoItemService : ITodoItemService
         _context = context;
     }
 
-    public async Task<TodoItem?> GetTodoItemAsync(int id)
-    {
-        throw new NotImplementedException();
-    }
-
     public async Task<IEnumerable<TodoItem>> GetAllUserTodoItemsAsync(int userId)
     {
         var todos = await _context.TodoItems.Where(t => t.UserId == userId).ToListAsync();
