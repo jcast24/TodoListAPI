@@ -24,8 +24,8 @@ public class TodoItemService : ITodoItemService
         {
             Title = todo.Title,
             Description = todo.Description,
-            IsCompleted = false,
-            UserId = userId
+            IsCompleted = todo.IsCompleted,
+            UserId = todo.UserId
         };
 
         _context.TodoItems.Add(newTodo);
