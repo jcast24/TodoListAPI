@@ -8,7 +8,9 @@ public interface ITodoItemService
 
     Task<TodoItem> CreateTodoAsync(int userId, TodoItem todo);
 
-    Task<TodoItem?> UpdateTodoAsync(int userId, TodoItem todo); 
+    Task<TodoItem?> UpdateTodoAsync(int userId, TodoItem todo);
+
+    Task<TodoItem?> PatchTodoCompleteAsync(int userId, TodoItem todo);
 
     Task<bool> DeleteTodoAsync(int userId, int todoId);
 }
