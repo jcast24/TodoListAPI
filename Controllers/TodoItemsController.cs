@@ -62,8 +62,8 @@ namespace TodoApi.Controllers
         }
 
         // update entire todo
-        [HttpPut("update/{id}")]
-        public async Task<IActionResult> UpdateFullTask(int id, [FromBody] TodoItem todoItem)
+        [HttpPut("update")]
+        public async Task<IActionResult> UpdateFullTask([FromBody] TodoItem todoItem)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
             if (userIdClaim == null)
@@ -73,8 +73,7 @@ namespace TodoApi.Controllers
 
             int userId = int.Parse(userIdClaim.Value);
 
-            var updatedTodo = await _todoService.UpdateTodoAsync(userId, todoItem.Id, todoItem);
-
+            var updatedTodo = await _todoService.UpdateTodoAsync(userId, todoItem);
             if (updatedTodo == null)
             {
                 return NotFound("Todo not found.");
@@ -84,8 +83,8 @@ namespace TodoApi.Controllers
         }
 
         // update isCompleted 
-        [HttpPut("completed/{id}")]
-        public async Task<IActionResult> UpdateCompletedTask(int id, [FromBody] TodoItem todoItem)
+        [HttpPatch("completed")]
+        public async Task<IActionResult> UpdateCompletedTask([FromBody] TodoItem todoItem)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
             if (userIdClaim == null)
@@ -95,7 +94,7 @@ namespace TodoApi.Controllers
 
             int userId = int.Parse(userIdClaim.Value);
 
-            var todo = await _todoContext.TodoItems.FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
+            var todo = await _todoContext.TodoItems.FirstOrDefaultAsync(t => t.Id == todoItem.Id && t.UserId == userId);
 
             if (todo == null)
             {
@@ -108,9 +107,10 @@ namespace TodoApi.Controllers
             return Ok(todo);
         }
 
-
-        [HttpDelete("delete/{id}")]
-        public async Task<IActionResult> DeleteTask(int id)
+        
+        // [HttpDelete("delete/{id}")]
+        [HttpDelete("delete")]
+        public async Task<IActionResult> DeleteTask([FromBody] TodoItem todo)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
             if (userIdClaim == null)
@@ -120,7 +120,7 @@ namespace TodoApi.Controllers
 
             int userId = int.Parse(userIdClaim.Value);
 
-            var deleted = await _todoService.DeleteTodoAsync(userId, id);
+            var deleted = await _todoService.DeleteTodoAsync(userId, todo.Id);
 
             if (!deleted)
             {
@@ -130,7 +130,7 @@ namespace TodoApi.Controllers
             return Ok("Todo deleted.");
         }
 
-        // admin should have this role
+        // TODO: admin should have this role
         [HttpDelete("user/delete/{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
