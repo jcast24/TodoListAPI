@@ -51,6 +51,20 @@ public class TodoItemService : ITodoItemService
         return getTodo;
     }
 
+    public async Task<TodoItem?> PatchTodoCompleteAsync(int userId, TodoItem todo)
+    {
+        var getTodo = await _context.TodoItems.FirstOrDefaultAsync(t => t.Id == todo.Id && t.UserId == userId);
+
+        if (getTodo == null)
+        {
+            return null;
+        }
+
+        getTodo.IsCompleted = todo.IsCompleted;
+        await _context.SaveChangesAsync();
+        return getTodo;
+    }
+
     public async Task<bool> DeleteTodoAsync(int userId, int todoId)
     {
         var chosenTodo = await _context.TodoItems.FirstOrDefaultAsync(t => t.Id == todoId && t.UserId == userId);
