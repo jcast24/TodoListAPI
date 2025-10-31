@@ -34,9 +34,9 @@ public class TodoItemService : ITodoItemService
         return newTodo;
     }
 
-    public async Task<TodoItem?> UpdateTodoAsync(int todoId, int userId, TodoItem todo)
+    public async Task<TodoItem?> UpdateTodoAsync(int userId, TodoItem todo)
     {
-        var getTodo = await _context.TodoItems.FirstOrDefaultAsync(t => t.Id == todoId && t.UserId == userId);
+        var getTodo = await _context.TodoItems.FirstOrDefaultAsync(t => t.Id == todo.Id && t.UserId == userId);
 
         if (getTodo == null)
         {
