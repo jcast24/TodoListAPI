@@ -94,17 +94,14 @@ namespace TodoApi.Controllers
 
             int userId = int.Parse(userIdClaim.Value);
 
-            var todo = await _todoContext.TodoItems.FirstOrDefaultAsync(t => t.Id == todoItem.Id && t.UserId == userId);
+            var updatedTodo = await _todoService.PatchTodoCompleteAsync(userId, todoItem);
 
-            if (todo == null)
+            if (updatedTodo == null)
             {
-                return NotFound("Todo not found.");
+                return NotFound();
             }
 
-            todo.IsCompleted = todoItem.IsCompleted;
-
-            await _todoContext.SaveChangesAsync();
-            return Ok(todo);
+            return Ok(updatedTodo);
         }
 
         
