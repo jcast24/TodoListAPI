@@ -128,6 +128,7 @@ namespace TodoApi.Controllers
         }
 
         // TODO: admin should have this role
+        [Authorize(Roles = "Admin")]
         [HttpDelete("user/delete/{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
@@ -137,7 +138,7 @@ namespace TodoApi.Controllers
                 return Unauthorized();
             }
 
-            int userId = int.Parse(userIdClaim.Value);
+            // int userId = int.Parse(userIdClaim.Value);
 
             var user = await _todoContext.Users.FirstOrDefaultAsync(u => u.Id == id);
 
@@ -149,6 +150,13 @@ namespace TodoApi.Controllers
             _todoContext.Remove(user);
             await _todoContext.SaveChangesAsync();
             return Ok("User successfully deleted.");
+        }
+
+        [HttpGet("admin-only")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult AdminOnlyEndpoint()
+        {
+            return Ok("you are an admin!");
         }
     }
 }
