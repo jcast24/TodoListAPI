@@ -1,4 +1,7 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using TodoApi.Models;
 using TodoApi.Services;
 
@@ -6,7 +9,7 @@ namespace TodoApi.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class AuthController(IAuthService authService) : ControllerBase
+public class AuthController(IAuthService authService, TodoContext todoContext) : ControllerBase
 {
 
     [HttpPost("register")]
@@ -33,6 +36,35 @@ public class AuthController(IAuthService authService) : ControllerBase
         }
 
         return Ok(response);
+    }
+    
+    [Authorize(Roles = "Admin")]
+    [HttpDelete("user/delete/{id}")]
+    public async Task<IActionResult> DeleteUser(int id)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+        if (userIdClaim == null)
+        {
+            return Unauthorized();
+        }
+
+        var user = await todoContext.Users.FirstOrDefaultAsync(u => u.Id == id);
+
+        if (user == null)
+        {
+            return NotFound("User not found.");
+        }
+
+        todoContext.Remove(user);
+        await todoContext.SaveChangesAsync();
+        return Ok("User successfully deleted.");
+    }
+
+    [HttpGet("admin-only")]
+    [Authorize(Roles = "Admin")]
+    public IActionResult AdminOnlyEndpoint()
+    {
+        return Ok("you are an admin!");
     }
 
     [HttpPost("refresh-token")]
