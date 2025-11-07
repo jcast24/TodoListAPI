@@ -3,20 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <title>Todo Api</title>
+    <link rel="stylesheet" href="site.css">
 </head>
 <body>
     <h1>Welcome to Todos!</h1>
-    <h2>Please Login or Register</h2>
+    <h2>Please Log in or Register</h2>
 
     <button id="register-btn">Register</button>
-    
-    <form id="loginForm">
-        <label for="username">Username:</label>
-        <input type="text" id="username" required>
+    <div id="login-section">
+        <form id="loginForm">
+            <label for="username">Username:</label>
+            <input type="text" id="username" required>
 
-        <label for="password">Password:</label>
-        <input type="text" id="password">
-        <button id="login-btn" type="submit">Login</button>
-    </form>
+            <label for="password">Password:</label>
+            <input type="text" id="password">
+            <button id="login-btn" type="submit">Login</button>
+        </form>    
+    </div>
+    
+    <p id="errorMessage" style="color: red;"></p>
 </body>
+<script type="module" src="site.js"></script>
 </html>
